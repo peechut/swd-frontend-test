@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  justify-content: space-between; /* ทำให้เนื้อหากระจายจากซ้ายไปขวา */
+  align-items: center; /* จัดตำแหน่งเนื้อหาในแนวตั้ง */
+  padding: 1rem;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: flex-start; /* ให้ส่วนนี้อยู่ซ้ายสุด */
+  width: 100%; /* ให้เนื้อหาขยายเต็มที่ */
+}
+
+.language-btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px; /* เพิ่มระยะห่างระหว่างข้อความและปุ่ม */
+}

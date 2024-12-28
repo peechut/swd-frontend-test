@@ -1,0 +1,30 @@
+/* styles/globals.css */
+html, body {
+  height: 100%; /* ให้ทั้ง html และ body ครอบคลุมพื้นที่ทั้งหมดของหน้าจอ */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* ป้องกันการเลื่อนข้าง */
+}
+
+body {
+  position: relative;
+  overflow: hidden;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, #6EDA78 0%, #FFA200 100%);
+  filter: blur(15px);
+  z-index: -1;
+}
+
+main {
+  width: 80vw; 
+  max-width: 1200px; 
+  margin: 0 auto; 
+}

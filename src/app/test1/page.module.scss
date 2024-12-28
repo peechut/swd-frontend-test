@@ -1,0 +1,205 @@
+$card-size: 100px;
+$card-color: #808080; // สีเทาสำหรับรูปทรง
+$card-background: #ffffff; // สีขาวสำหรับพื้นหลังการ์ด
+$hover-color: #ffa200; // สีเมื่อ hover
+$active-color: #6eda78; // สีเมื่อคลิก
+
+.card {
+  background-color: $card-background; /* สีพื้นหลังขาว */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 5px;
+
+  &:hover {
+    background-color: $hover-color; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  }
+
+  &:active {
+    background-color: $active-color; /* เปลี่ยนสีพื้นหลังเมื่อคลิก */
+  }
+}
+
+.cardArrow {
+  padding: 20px; // ปรับ padding สำหรับการ์ดที่เป็นลูกศร
+  border-radius: 10px; // มุมโค้ง
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px; // ขนาดของการ์ด
+  height: 130px; // ขนาดของการ์ด
+
+  &:hover {
+    background-color: $hover-color; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  }
+
+  &:active {
+    background-color: $active-color; /* เปลี่ยนสีพื้นหลังเมื่อคลิก */
+  }
+}
+
+.cardSpecific {
+  background-color: $card-background; // พื้นหลังสีขาว
+  border-radius: 10px; // มุมโค้ง
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // เงาให้ดูน่าสนใจ
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 130px; // ขนาดของการ์ด
+
+  &:hover {
+    background-color: $hover-color; /* เปลี่ยนสีพื้นหลังเมื่อ hover */
+  }
+
+  &:active {
+    background-color: $active-color; /* เปลี่ยนสีพื้นหลังเมื่อคลิก */
+  }
+}
+
+// รูปทรงต่าง ๆ
+.card--circle {
+  background-color: $card-color;
+  border-radius: 50%;
+  width: $card-size;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--oval {
+  background-color: $card-color;
+  border-radius: 50%;
+  width: $card-size * 1.9;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  background-color: $card-color;
+  border-radius: 0px;
+  width: $card-size;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--triangle-upside-down {
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+  background-color: $card-color;
+  border-radius: 0px;
+  width: $card-size;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--triangle-left {
+  clip-path: polygon(0% 50%, 100% 0%, 100% 100%);
+  background-color: $card-color;
+  border-radius: 0px;
+  width: $card-size;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--triangle-right {
+  clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
+  background-color: $card-color;
+  border-radius: 0px;
+  width: $card-size;
+  height: $card-size;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--square {
+  background-color: $card-color;
+  width: $card-size;
+  height: $card-size;
+  border-radius: 0px;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--rectangle {
+  background-color: $card-color;
+  width: $card-size * 2;
+  height: $card-size;
+  border-radius: 0px;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--parallelogram {
+  background-color: $card-color;
+  width: $card-size * 1.5;
+  height: $card-size;
+  transform: skew(20deg);
+  border-radius: 0px;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--trapezoid {
+  border-bottom: 100px solid $card-color;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  height: 0;
+  width: 100px;
+  border-radius: 0px;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.card--empty {
+  background-color: transparent;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: none;
+
+  /* ไม่มีการเปลี่ยนสีเมื่อ hover หรือคลิก */
+}
+
+.moveShapeButton {
+  background-color: #4caf50; /* สีเขียวสำหรับพื้นหลัง */
+  color: white; /* สีตัวอักษรเป็นสีขาว */
+  border: none;
+  border-radius: 25px; /* ขอบมน */
+  width: auto;
+  padding: 8px; /* กำหนด padding */
+  justify-content: center;
+  align-items: center;
+  font-size: 12px; /* ขนาดตัวอักษร */
+  position: absolute;
+  left: 30;
+  bottom: -10px;
+  z-index: 2;
+}
+
+.movePositionButton {
+  background-color: #4caf50; /* สีเขียวสำหรับพื้นหลัง */
+  color: white; /* สีตัวอักษรเป็นสีขาว */
+  border: none;
+  border-radius: 25px; /* ขอบมน */
+  width: auto;
+  padding: 8px; /* กำหนด padding */
+  justify-content: center;
+  align-items: center;
+  font-size: 12px; /* ขนาดตัวอักษร */
+  position: absolute;
+  left: 30;
+  bottom: -10px;
+  z-index: 2;
+
+}
