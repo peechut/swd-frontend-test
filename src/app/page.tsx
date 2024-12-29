@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import CustomCard from './components/Card';
+import CustomCard from '../components/Card';
 import { Row, Col } from 'antd';
 
 export default function Home() {
