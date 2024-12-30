@@ -1,26 +1,29 @@
-// formSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // กำหนดประเภทของข้อมูลพนักงาน
 interface Employee {
+  id: string; // ใช้ id ในการอ้างอิง
   title: string;
   firstname: string;
   lastname: string;
-  birthday: string; // เพิ่ม birthday
-  nationality: string; // เพิ่ม nationality
+  birthday: string;
+  nationality: string;
   citizenId: string;
   gender: string;
-  phone: string; // เพิ่ม phone
-  salary: string; // เพิ่ม salary
-  passport: string; // เพิ่ม passport
+  phone: string;
+  salary: string;
+  passport: string;
 }
 
 interface FormState {
-  user: Employee[]; // array ของพนักงาน
+  user: Employee[];
+  editingEmployee: Employee | null; // เก็บพนักงานที่กำลังถูกแก้ไข
 }
 
+// โหลดข้อมูลจาก localStorage
 const initialState: FormState = {
-  user: JSON.parse(localStorage.getItem("employees") || "[]"), // โหลดข้อมูลจาก localStorage หากมี
+  user: JSON.parse(localStorage.getItem("employees") || "[]"),
+  editingEmployee: null,
 };
 
 const formSlice = createSlice({
@@ -28,31 +31,33 @@ const formSlice = createSlice({
   initialState,
   reducers: {
     addEmployee: (state, action: PayloadAction<Employee>) => {
-      state.user.push(action.payload); // เพิ่มพนักงานใหม่ลงใน state
-      localStorage.setItem("employees", JSON.stringify(state.user)); // อัพเดตข้อมูลใน localStorage
+      state.user.push(action.payload);
+      // อัปเดต localStorage
+      localStorage.setItem("employees", JSON.stringify(state.user));
     },
     deleteEmployee: (state, action: PayloadAction<string>) => {
-      // ลบพนักงานที่มี citizenId ตรงกับที่ส่งมา
-      const updatedEmployees = state.user.filter(
-        (emp) => emp.citizenId !== action.payload
-      );
-      state.user = updatedEmployees; // อัพเดต state ใหม่
-      localStorage.setItem("employees", JSON.stringify(updatedEmployees)); // อัพเดตข้อมูลใน localStorage
+      // ลบพนักงานที่ id ตรงกับ action.payload
+      state.user = state.user.filter((emp) => emp.id !== action.payload);
+      // อัปเดต localStorage
+      localStorage.setItem("employees", JSON.stringify(state.user));
     },
     editEmployee: (state, action: PayloadAction<Employee>) => {
-        // แก้ไขพนักงานที่ตรงกับ firstname และ lastname
-        const index = state.user.findIndex(
-          (emp) =>
-            emp.firstname === action.payload.firstname &&
-            emp.lastname === action.payload.lastname
-        );
-        if (index !== -1) {
-          state.user[index] = action.payload; // อัพเดตข้อมูลพนักงานใน state
-          localStorage.setItem("employees", JSON.stringify(state.user)); // อัพเดตข้อมูลใน localStorage
-        }
-      },
+      // ค้นหาพนักงานที่ต้องการแก้ไข
+      const index = state.user.findIndex((emp) => emp.id === action.payload.id);
+      if (index !== -1) {
+        state.user[index] = action.payload; // อัปเดตข้อมูลใน state
+        // อัปเดต localStorage ด้วยข้อมูลใหม่
+        localStorage.setItem("employees", JSON.stringify(state.user));
+      }
+    },
+    setEditingEmployee: (state, action: PayloadAction<Employee | null>) => {
+      // ตั้งค่าพนักงานที่กำลังแก้ไข
+      state.editingEmployee = action.payload;
+    },
   },
 });
 
-export const {editEmployee, addEmployee, deleteEmployee } = formSlice.actions;
+// Export actions และ reducer
+export const { addEmployee, deleteEmployee, editEmployee, setEditingEmployee } =
+  formSlice.actions;
 export default formSlice.reducer;
