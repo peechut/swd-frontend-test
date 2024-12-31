@@ -70,6 +70,7 @@ const FormPage: React.FC = () => {
               <Select
                 defaultValue={formState.title}
                 onChange={(value) => form.setFieldsValue({ title: value })}
+                placeholder={t("title")}
               >
                 <Select.Option value="Mr.">{t("mr")}</Select.Option>
                 <Select.Option value="Ms.">{t("ms")}</Select.Option>
@@ -116,6 +117,7 @@ const FormPage: React.FC = () => {
             >
               <DatePicker
                 style={{ width: "100%" }}
+                placeholder={t("YYMMDD")}
                 value={formState.birthday ? dayjs(formState.birthday) : null}
               />
             </Form.Item>
@@ -129,6 +131,7 @@ const FormPage: React.FC = () => {
               ]}
             >
               <Select
+                placeholder={"-- Please select --"}
                 value={formState.nationality}
                 onChange={(value) =>
                   form.setFieldsValue({ nationality: value })
@@ -141,9 +144,103 @@ const FormPage: React.FC = () => {
             </Form.Item>
           </Col>
         </Row>
+        <Form.Item label={t("citizenId")} required>
+          <Input.Group compact>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Form.Item
+                key={index}
+                name={["citizenId", `part${index + 1}`]}
+                rules={[
+                  {
+                    required: true, // ต้องกรอกข้อมูล
+                  },
+                  {
+                    pattern: /^\d+$/, // ใช้ pattern นี้เพื่อให้กรอกได้เฉพาะตัวเลข
+                  },
+                ]}
+                noStyle
+              >
+                <Input
+                  id={`citizen-part${index + 1}`}
+                  maxLength={
+                    index === 0
+                      ? 1
+                      : index === 1
+                      ? 4
+                      : index === 2
+                      ? 5
+                      : index === 3
+                      ? 2
+                      : 1
+                  }
+                  style={{
+                    width:
+                      index === 0
+                        ? "10%"
+                        : index === 1
+                        ? "20%"
+                        : index === 2
+                        ? "25%"
+                        : index === 3
+                        ? "15%"
+                        : "10%",
+                    textAlign: "center",
+                    margin: index > 0 ? "0 5px" : "0",
+                    borderRadius: "4px",
+                    border: "1px solid", // ใส่กรอบ
+                    borderColor: "transparent", // กรอบปกติเป็นสีโปร่งใส
+                  }}
+                  onChange={(e) => {
+                    const length =
+                      index === 0
+                        ? 1
+                        : index === 1
+                        ? 4
+                        : index === 2
+                        ? 5
+                        : index === 3
+                        ? 2
+                        : 1;
 
-        <Form.Item label={t("citizenId")} name="citizenId">
-          <Input />
+                    if (e.target.value.length === length) {
+                      const nextInput = document.getElementById(
+                        `citizen-part${index + 2}`
+                      );
+                      if (nextInput) nextInput.focus();
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    // ป้องกันการพิมพ์ที่ไม่ใช่ตัวเลข
+                    if (!/\d/.test(e.key) && e.key !== "Backspace") {
+                      e.preventDefault();
+                    }
+
+                    // การลบข้อมูล (Backspace)
+                    if (e.key === "Backspace" && e.target.value === "") {
+                      const prevInput = document.getElementById(
+                        `citizen-part${index}`
+                      );
+                      if (prevInput) {
+                        prevInput.focus();
+                        prevInput.select();
+                      }
+                    }
+                  }}
+                />
+                {index < 4 && (
+                  <span
+                    style={{
+                      padding: "0 5px",
+                      fontSize: "18px",
+                      color: "#000",
+                    }}
+                  >
+                    -
+                  </span>
+                )}
+              </Form.Item>
+            ))}
+          </Input.Group>
         </Form.Item>
 
         <Form.Item
@@ -171,8 +268,11 @@ const FormPage: React.FC = () => {
           <Input addonBefore={prefixSelector} style={{ width: "100%" }} />
         </Form.Item>
 
-        <Form.Item  
-              wrapperCol={{ span: 18 }} label={t("passport")} name="passport">
+        <Form.Item
+          wrapperCol={{ span: 18 }}
+          label={t("passport")}
+          name="passport"
+        >
           <Input />
         </Form.Item>
 
@@ -188,14 +288,14 @@ const FormPage: React.FC = () => {
 
         <Form.Item>
           <Button type="default" onClick={handleReset}>
-          {t("resetButton")}
+            {t("resetButton")}
           </Button>
           <Button
             type="primary"
             style={{ marginLeft: "10px" }}
             htmlType="submit"
           >
-           {t("submitButton")}
+            {t("submitButton")}
           </Button>
         </Form.Item>
       </Form>

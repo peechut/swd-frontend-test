@@ -31,7 +31,9 @@ const resources = {
       unsex:"Unsex",
       thai:"Thai",
       usa:"America",
-      other:"Other"
+      other:"Other",
+      titlePlaceholder:"title",
+      YYMMDD:"YYYY-MM-DD",  
     }
   },
   th: {
@@ -62,7 +64,8 @@ const resources = {
       unsex:"ไม่ระบุ",
       thai:"ไทย",
       usa:"อเมริกา",
-      other:"อื่นๆ"
+      other:"อื่นๆ",
+      YYMMDD:"ปี-เดือน-วัน",  
     }
   }
 };
