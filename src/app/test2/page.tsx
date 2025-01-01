@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Form, Input, Button, Row, Col, Select, DatePicker, Radio } from "antd";
 import { addEmployee, editEmployee } from "@/store/slice/formSlice"; // import action จาก formSlice
@@ -15,30 +15,82 @@ const FormPage: React.FC = () => {
   const formState = useSelector((state: RootState) => state.form); // รับค่าจาก state ใน Redux\
   const { t } = useTranslation(); // ใช้สำหรับแปลข้อความ
 
+  const handleInputChange = (e, index, nextInputRef) => {
+    const value = e.target.value;
+    if (value.length === e.target.maxLength && nextInputRef) {
+      nextInputRef.current.focus(); // ไปยัง input ถัดไปเมื่อกรอกข้อมูลครบ
+    }
+  };
+
+  useEffect(() => {
+    // กำหนดค่าเริ่มต้นสำหรับ prefix
+    form.setFieldsValue({ prefix: "+66" });
+  }, [form]);
+
+  const part2Ref = React.useRef(null);
+  const part3Ref = React.useRef(null);
+  const part4Ref = React.useRef(null);
+  const part5Ref = React.useRef(null);
+
   const handleEdit = (employee: any) => {
+    // แยก citizenId เป็นส่วนๆ
+    const citizenIdParts = [
+      employee.citizenId.substring(0, 1), // part1
+      employee.citizenId.substring(1, 5), // part2
+      employee.citizenId.substring(5, 10), // part3
+      employee.citizenId.substring(10, 12), // part4
+      employee.citizenId.substring(12, 13), // part5
+    ];
+    console.log("employee: ", employee);
     form.setFieldsValue({
       ...employee,
+      id: employee.id,
       birthday: employee.birthday ? dayjs(employee.birthday) : null, // แปลงวันที่
+      citizenId: {
+        part1: citizenIdParts[0],
+        part2: citizenIdParts[1],
+        part3: citizenIdParts[2],
+        part4: citizenIdParts[3],
+        part5: citizenIdParts[4],
+      },
     });
   };
 
   const handleSubmit = (values: any) => {
-    const newEmployee = {
-      id: uuidv4(), // สร้าง unique ID ด้วย uuid
+    console.log(values);
+    const citizenId = [
+      values.citizenId?.part1 || "",
+      values.citizenId?.part2 || "",
+      values.citizenId?.part3 || "",
+      values.citizenId?.part4 || "",
+      values.citizenId?.part5 || "",
+    ].join("");
+
+    const phoneNumber = `${values.prefix}${values.phone}`;
+
+    const employeeData = {
+      id: values.id || uuidv4(), // ใช้ ID เดิมถ้ามี (สำหรับการแก้ไข)
       title: values.title,
       firstname: values.firstname,
       lastname: values.lastname,
       birthday: values.birthday ? values.birthday.format("YYYY-MM-DD") : "",
       nationality: values.nationality,
-      citizenId: values.citizenId,
+      citizenId,
       gender: values.gender,
-      phone: values.phone,
+      phone: phoneNumber,
       passportNo: values.passport,
       salary: values.salary,
     };
 
-    dispatch(addEmployee(newEmployee)); // เรียกใช้ action เพื่อเพิ่มพนักงาน
-    form.resetFields(); // รีเซ็ตฟอร์มหลังจากการส่งข้อมูล
+    if (values.id) {
+      console.log("pass");
+      dispatch(editEmployee(employeeData)); // แก้ไขข้อมูล
+    } else {
+      console.log("fail");
+      dispatch(addEmployee(employeeData)); // เพิ่มข้อมูลใหม่
+    }
+
+    form.resetFields(); // รีเซ็ตฟอร์มหลังการส่งข้อมูล
   };
 
   const handleReset = () => {
@@ -49,8 +101,12 @@ const FormPage: React.FC = () => {
 
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
-      <Select style={{ width: 120 }} defaultValue="66">
-        <Option value="66">+66</Option>
+      <Select
+        style={{ width: 120 }}
+        value={form.getFieldValue("prefix")} // ใช้ค่าปัจจุบันจาก form
+      >
+        <Option value="+66">+66</Option>
+        <Option value="+44">+44</Option>
       </Select>
     </Form.Item>
   );
@@ -58,8 +114,17 @@ const FormPage: React.FC = () => {
   return (
     <>
       <Form form={form} onFinish={handleSubmit}>
+        <Form.Item
+          label="ID"
+          name="id"
+          rules={[{ required: true, message: "Please input an ID!" }]}
+          style={{ display: "none" }} 
+        >
+          <Input type="hidden" />
+        </Form.Item>
+
         <Row>
-          <Col span={4}>
+          <Col span={6}>
             <Form.Item
               label={t("title")}
               name="title"
@@ -79,7 +144,7 @@ const FormPage: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          <Col span={9}>
             <Form.Item
               label={t("firstname")}
               name="firstname"
@@ -91,7 +156,7 @@ const FormPage: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col span={8}>
+          <Col span={9}>
             <Form.Item
               label={t("lastname")}
               name="lastname"
@@ -131,115 +196,132 @@ const FormPage: React.FC = () => {
               ]}
             >
               <Select
-                placeholder={"-- Please select --"}
+                placeholder={t("placeholderNationality")}
                 value={formState.nationality}
                 onChange={(value) =>
                   form.setFieldsValue({ nationality: value })
                 }
               >
-                <Select.Option value="Thai">{t("thai")}</Select.Option>
-                <Select.Option value="American">{t("usa")}</Select.Option>
-                <Select.Option value="Other">{t("orther")}</Select.Option>
+                <Select.Option value="Thai">{t("Thai")}</Select.Option>
+                <Select.Option value="American">{t("American")}</Select.Option>
+                <Select.Option value="Other">{t("Other")}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label={t("citizenId")} required>
+        <Form.Item label="Citizen ID" required>
           <Input.Group compact>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Form.Item
-                key={index}
-                name={["citizenId", `part${index + 1}`]}
-                rules={[
-                  {
-                    required: true, // ต้องกรอกข้อมูล
-                  },
-                  {
-                    pattern: /^\d+$/, // ใช้ pattern นี้เพื่อให้กรอกได้เฉพาะตัวเลข
-                  },
-                ]}
-                noStyle
-              >
-                <Input
-                  id={`citizen-part${index + 1}`}
-                  maxLength={
-                    index === 0
-                      ? 1
-                      : index === 1
-                      ? 4
-                      : index === 2
-                      ? 5
-                      : index === 3
-                      ? 2
-                      : 1
-                  }
-                  style={{
-                    width:
-                      index === 0
-                        ? "10%"
-                        : index === 1
-                        ? "20%"
-                        : index === 2
-                        ? "25%"
-                        : index === 3
-                        ? "15%"
-                        : "10%",
-                    textAlign: "center",
-                    margin: index > 0 ? "0 5px" : "0",
-                    borderRadius: "4px",
-                    border: "1px solid", // ใส่กรอบ
-                    borderColor: "transparent", // กรอบปกติเป็นสีโปร่งใส
-                  }}
-                  onChange={(e) => {
-                    const length =
-                      index === 0
-                        ? 1
-                        : index === 1
-                        ? 4
-                        : index === 2
-                        ? 5
-                        : index === 3
-                        ? 2
-                        : 1;
-
-                    if (e.target.value.length === length) {
-                      const nextInput = document.getElementById(
-                        `citizen-part${index + 2}`
-                      );
-                      if (nextInput) nextInput.focus();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    // ป้องกันการพิมพ์ที่ไม่ใช่ตัวเลข
-                    if (!/\d/.test(e.key) && e.key !== "Backspace") {
-                      e.preventDefault();
-                    }
-
-                    // การลบข้อมูล (Backspace)
-                    if (e.key === "Backspace" && e.target.value === "") {
-                      const prevInput = document.getElementById(
-                        `citizen-part${index}`
-                      );
-                      if (prevInput) {
-                        prevInput.focus();
-                        prevInput.select();
-                      }
-                    }
-                  }}
-                />
-                {index < 4 && (
-                  <span
-                    style={{
-                      padding: "0 5px",
-                      fontSize: "18px",
-                      color: "#000",
-                    }}
-                  >
-                    -
-                  </span>
-                )}
-              </Form.Item>
-            ))}
+            <Form.Item
+              name={["citizenId", "part1"]}
+              rules={[
+                {
+                  pattern: /^\d+$/,
+                },
+              ]}
+              noStyle
+            >
+              <Input
+                id="citizen-part1"
+                maxLength={1}
+                style={{
+                  width: "10%",
+                  textAlign: "center",
+                  marginRight: "5px",
+                }}
+                onChange={(e) => handleInputChange(e, 1, part2Ref)}
+              />
+            </Form.Item>
+            <span style={{ padding: "0 5px", fontSize: "18px", color: "#000" }}>
+              -
+            </span>
+            <Form.Item
+              name={["citizenId", "part2"]}
+              rules={[
+                {
+                  pattern: /^\d+$/,
+                },
+              ]}
+              noStyle
+            >
+              <Input
+                id="citizen-part2"
+                maxLength={4}
+                style={{
+                  width: "20%",
+                  textAlign: "center",
+                  marginRight: "5px",
+                }}
+                ref={part2Ref}
+                onChange={(e) => handleInputChange(e, 2, part3Ref)}
+              />
+            </Form.Item>
+            <span style={{ padding: "0 5px", fontSize: "18px", color: "#000" }}>
+              -
+            </span>
+            <Form.Item
+              name={["citizenId", "part3"]}
+              rules={[
+                {
+                  pattern: /^\d+$/,
+                },
+              ]}
+              noStyle
+            >
+              <Input
+                id="citizen-part3"
+                maxLength={5}
+                style={{
+                  width: "25%",
+                  textAlign: "center",
+                  marginRight: "5px",
+                }}
+                ref={part3Ref}
+                onChange={(e) => handleInputChange(e, 3, part4Ref)}
+              />
+            </Form.Item>
+            <span style={{ padding: "0 5px", fontSize: "18px", color: "#000" }}>
+              -
+            </span>
+            <Form.Item
+              name={["citizenId", "part4"]}
+              rules={[
+                {
+                  pattern: /^\d+$/,
+                },
+              ]}
+              noStyle
+            >
+              <Input
+                id="citizen-part4"
+                maxLength={2}
+                style={{
+                  width: "15%",
+                  textAlign: "center",
+                  marginRight: "5px",
+                }}
+                ref={part4Ref}
+                onChange={(e) => handleInputChange(e, 4, part5Ref)}
+              />
+            </Form.Item>
+            <span style={{ padding: "0 5px", fontSize: "18px", color: "#000" }}>
+              -
+            </span>
+            <Form.Item
+              name={["citizenId", "part5"]}
+              rules={[
+                {
+                  pattern: /^\d+$/,
+                },
+              ]}
+              noStyle
+            >
+              <Input
+                id="citizen-part5"
+                maxLength={1}
+                style={{ width: "10%", textAlign: "center" }}
+                ref={part5Ref}
+              />
+            </Form.Item>
           </Input.Group>
         </Form.Item>
 
@@ -252,9 +334,9 @@ const FormPage: React.FC = () => {
             value={form.getFieldValue("gender")}
             onChange={(e) => form.setFieldsValue({ gender: e.target.value })}
           >
-            <Radio value="Male">{t("male")}</Radio>
-            <Radio value="Female">{t("female")}</Radio>
-            <Radio value="Unisex">{t("unsex")}</Radio>
+            <Radio value="Male">{t("Male")}</Radio>
+            <Radio value="Female">{t("Female")}</Radio>
+            <Radio value="Unisex">{t("Unsex")}</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -287,16 +369,22 @@ const FormPage: React.FC = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="default" onClick={handleReset}>
-            {t("resetButton")}
-          </Button>
-          <Button
-            type="primary"
-            style={{ marginLeft: "10px" }}
-            htmlType="submit"
-          >
-            {t("submitButton")}
-          </Button>
+          <Row justify="end">
+            <Col>
+              <Button type="default" onClick={handleReset}>
+                {t("resetButton")}
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                type="primary"
+                style={{ marginLeft: "10px" }}
+                htmlType="submit"
+              >
+                {t("submitButton")}
+              </Button>
+            </Col>
+          </Row>
         </Form.Item>
       </Form>
 

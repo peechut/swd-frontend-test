@@ -4,16 +4,14 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteEmployee } from "@/store/slice/formSlice"; // import action deleteEmployee
 import { RootState } from "@/store/store"; // import RootState เพื่อใช้ในการเลือกค่าจาก Redux store
-
+import { useTranslation } from "react-i18next"; // Import the hook for i18n
 const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
   onEdit,
 }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation(); // Use the translation hook
   const employees = useSelector((state: RootState) => state.form.user); // ดึงข้อมูลพนักงานจาก Redux store
   console.log(employees);
-  const handleEdit = (employee: Employee) => {
-    dispatch(setEditingEmployee(employee)); // ตั้งค่าพนักงานที่กำลังแก้ไข
-  };
 
   // ฟังก์ชันสำหรับการลบพนักงาน
   const handleDelete = (id: string) => {
@@ -26,7 +24,7 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
   // กำหนดคอลัมน์ของตาราง
   const columns = [
     {
-      title: "Name",
+      title: t("name"),
       dataIndex: "name",
       render: (text: string, record: any) => (
         <span>
@@ -35,19 +33,29 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
       ),
     },
     {
-      title: "Gender",
+      title: t("gender"),
       dataIndex: "gender",
+      render: (gender: string) => {
+        // แสดงผลค่าของ gender เช่น "male", "female", "unsex" โดยแปลเป็นภาษา
+        console.log(gender)
+        return t(gender); // "male" => "ผู้ชาย", "female" => "ผู้หญิง", "unsex" => "ไม่ระบุ"
+      },
     },
     {
-      title: "Phone",
+      title: t("phone"),
       dataIndex: "phone",
     },
     {
-      title: "Nationality",
+      title: t("nationality"),
       dataIndex: "nationality",
+      render: (nationality: string) => {
+        console.log('nationality: ', nationality)
+        // แสดงผลค่าของ gender เช่น "male", "female", "unsex" โดยแปลเป็นภาษา
+        return t(nationality); // "male" => "ผู้ชาย", "female" => "ผู้หญิง", "unsex" => "ไม่ระบุ"
+      },
     },
     {
-      title: "Manages",
+      title: t("manages"),
       key: "manage",
       render: (_: any, record: any) => (
         <span>

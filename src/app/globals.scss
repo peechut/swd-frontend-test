@@ -8,7 +8,10 @@ html, body {
 
 body {
   position: relative;
-  overflow: hidden;
+  overflow-y: auto; /* เพิ่ม overflow-y: auto เพื่อให้สามารถเลื่อนหน้าได้ */
+  height: 100%; /* ทำให้ body เต็มพื้นที่ของหน้าจอ */
+  background: linear-gradient(to right, #6EDA78 0%, #FFA200 100%); /* ใช้ gradient */
+  
 }
 
 body::before {
@@ -18,13 +21,18 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to right, #6EDA78 0%, #FFA200 100%);
-  filter: blur(15px);
+  width: 100%; /* ให้ครอบคลุมเต็มพื้นที่ */
+  height: 100%; /* ให้ครอบคลุมเต็มพื้นที่ */
+ 
   z-index: -1;
 }
 
 main {
-  width: 80vw; 
-  max-width: 1200px; 
-  margin: 0 auto; 
+  width: 80vw;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh; /* ทำให้ main ครอบคลุมความสูงของหน้าจอ */
+  padding-bottom: 20px; /* เพิ่ม padding ด้านล่างเพื่อไม่ให้คอนเทนต์ลอยขึ้น */
+  box-sizing: border-box;
+  position: relative; /* เพิ่ม position: relative ให้ main เพื่อให้สิ่งที่อยู่ภายในสามารถจัดการได้ */
 }
