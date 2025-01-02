@@ -1,23 +1,50 @@
 "use client";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Form, Input, Button, Row, Col, Select, DatePicker, Radio } from "antd";
-import { addEmployee, editEmployee } from "@/store/slice/formSlice"; // import action จาก formSlice
-import { RootState } from "@/store/store"; // import RootState เพื่อใช้ในการเลือกค่าจาก Redux store
+import { addEmployee, editEmployee, Employee } from "@/store/slice/formSlice"; // import action จาก formSlice
+
 import dayjs from "dayjs"; // ใช้ dayjs สำหรับการแปลงวันที่
 import { v4 as uuidv4 } from "uuid";
 import UserTable from "@/components/TableUser";
 import { useTranslation } from "react-i18next";
+import { ChangeEvent, RefObject } from "react";
+type CitizenId = {
+  part1: string;
+  part2: string;
+  part3: string;
+  part4: string;
+  part5: string;
+};
 
+type FormValues = {
+  id?: string;
+  title: string;
+  firstname: string;
+  lastname: string;
+  birthday: dayjs.Dayjs | null;
+  nationality: string;
+  citizenId: CitizenId;
+  gender: string;
+  phone: string;
+  passport: string;
+  salary: string;
+  prefix: string;
+};
 const FormPage: React.FC = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const formState = useSelector((state: RootState) => state.form); // รับค่าจาก state ใน Redux\
   const { t } = useTranslation(); // ใช้สำหรับแปลข้อความ
 
-  const handleInputChange = (e, index, nextInputRef) => {
+  
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+    nextInputRef: RefObject<HTMLInputElement>
+  ) => {
     const value = e.target.value;
-    if (value.length === e.target.maxLength && nextInputRef) {
+    if (value.length === e.target.maxLength && nextInputRef.current) {
       nextInputRef.current.focus(); // ไปยัง input ถัดไปเมื่อกรอกข้อมูลครบ
     }
   };
@@ -32,7 +59,7 @@ const FormPage: React.FC = () => {
   const part4Ref = React.useRef(null);
   const part5Ref = React.useRef(null);
 
-  const handleEdit = (employee: any) => {
+  const handleEdit = (employee: Employee) => {
     // แยก citizenId เป็นส่วนๆ
     const citizenIdParts = [
       employee.citizenId.substring(0, 1), // part1
@@ -56,7 +83,7 @@ const FormPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: FormValues) => {
     console.log(values);
     const citizenId = [
       values.citizenId?.part1 || "",
@@ -78,7 +105,7 @@ const FormPage: React.FC = () => {
       citizenId,
       gender: values.gender,
       phone: phoneNumber,
-      passportNo: values.passport,
+      passport: values.passport,
       salary: values.salary,
     };
 
@@ -117,8 +144,7 @@ const FormPage: React.FC = () => {
         <Form.Item
           label="ID"
           name="id"
-          rules={[{ required: true, message: "Please input an ID!" }]}
-          style={{ display: "none" }} 
+          style={{ display: "none" }}
         >
           <Input type="hidden" />
         </Form.Item>
@@ -133,7 +159,6 @@ const FormPage: React.FC = () => {
               rules={[{ required: true, message: t("pleaseSelectTitle") }]}
             >
               <Select
-                defaultValue={formState.title}
                 onChange={(value) => form.setFieldsValue({ title: value })}
                 placeholder={t("title")}
               >
@@ -180,11 +205,7 @@ const FormPage: React.FC = () => {
                 { required: true, message: "Please select your birthday!" },
               ]}
             >
-              <DatePicker
-                style={{ width: "100%" }}
-                placeholder={t("YYMMDD")}
-                value={formState.birthday ? dayjs(formState.birthday) : null}
-              />
+              <DatePicker style={{ width: "100%" }} placeholder={t("YYMMDD")} />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -197,7 +218,6 @@ const FormPage: React.FC = () => {
             >
               <Select
                 placeholder={t("placeholderNationality")}
-                value={formState.nationality}
                 onChange={(value) =>
                   form.setFieldsValue({ nationality: value })
                 }

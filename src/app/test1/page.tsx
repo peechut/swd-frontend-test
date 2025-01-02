@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { Row, Col, Divider } from "antd";
 import styles from "./page.module.scss"; // นำเข้า styles
+import { useTranslation } from "react-i18next";
 
 export default function Test1() {
+  const { t } = useTranslation();
   const [shapes, setShapes] = useState([
     { id: 1, className: styles["card--oval"] },
     { id: 2, className: styles["card--square"] },
@@ -53,9 +55,9 @@ export default function Test1() {
     setShapes((prevShapes) => {
       const rotatedShapes = [...prevShapes];
       const removedShape = rotatedShapes.pop();
-if (removedShape !== undefined) {
-  rotatedShapes.unshift(removedShape);
-}
+      if (removedShape !== undefined) {
+        rotatedShapes.unshift(removedShape);
+      }
 
       return rotatedShapes;
     });
@@ -133,7 +135,9 @@ if (removedShape !== undefined) {
                     }}
                   />
                 </div>
-                <button className={styles["movePositionButton"]}>Move position</button>
+                <button className={styles["movePositionButton"]}>
+                  {t("movePosition")}
+                </button>
               </Col>
             </Row>
           </Col>
@@ -152,7 +156,9 @@ if (removedShape !== undefined) {
             <div className={styles["card"]}>
               <div className={styles["card--triangle-right"]} />
             </div>
-            <button className={styles["moveShapeButton"]}>Move shape</button>
+            <button className={styles["moveShapeButton"]}>
+              {t("moveShape")}
+            </button>
           </Col>
         </Row>
 
@@ -178,7 +184,7 @@ if (removedShape !== undefined) {
               >
                 <div className={styles["card--empty"]} />
               </Col>
-              { firstRowShapes.map((shape) => (
+              {firstRowShapes.map((shape) => (
                 <Col
                   key={shape.id}
                   span={6}

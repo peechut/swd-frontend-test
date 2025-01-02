@@ -1,24 +1,49 @@
 import React from "react";
-import { Table, Button, Popconfirm, message } from "antd";
+import { Table, Button, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteEmployee } from "@/store/slice/formSlice"; // import action deleteEmployee
+import {
+  deleteEmployee,
+  deleteMultipleEmployees,
+  Employee,
+  setSelectedRowKeys,
+} from "@/store/slice/formSlice"; // import action deleteEmployee
 import { RootState } from "@/store/store"; // import RootState เพื่อใช้ในการเลือกค่าจาก Redux store
 import { useTranslation } from "react-i18next"; // Import the hook for i18n
-const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
-  onEdit,
-}) => {
+
+interface UserTableProps {
+  onEdit: (employee: Employee) => void;
+}
+
+const UserTable: React.FC<UserTableProps> = ({ onEdit }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation(); // Use the translation hook
   const employees = useSelector((state: RootState) => state.form.user); // ดึงข้อมูลพนักงานจาก Redux store
-  console.log(employees);
+  const selectedRowKeys = useSelector(
+    (state: RootState) => state.form.selectedRowKeys
+  );
 
   // ฟังก์ชันสำหรับการลบพนักงาน
   const handleDelete = (id: string) => {
-    console.log(id);
     // ลบพนักงานจาก Redux store โดยใช้ uuid
     dispatch(deleteEmployee(id)); // ส่ง citizenId ไปยัง action เพื่อทำการลบ
     message.success("Employee deleted successfully!"); // แสดงข้อความสำเร็จ
+  };
+
+  // ฟังก์ชันสำหรับการลบพนักงานหลายคน
+  const handleDeleteSelected = () => {
+    if (selectedRowKeys.length > 0) {
+      dispatch(deleteMultipleEmployees(selectedRowKeys));
+      message.success(t("employees_deleted"));
+      dispatch(setSelectedRowKeys([])); // เคลียร์รายการที่เลือก
+    } else {
+      message.warning(t("no_employee_selected"));
+    }
+  };
+
+  // ฟังก์ชันสำหรับการเลือกและยกเลิกการเลือก
+  const handleSelectChange = (keys: React.Key[]) => {
+    dispatch(setSelectedRowKeys(keys as string[]));
   };
 
   // กำหนดคอลัมน์ของตาราง
@@ -26,7 +51,7 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
     {
       title: t("name"),
       dataIndex: "name",
-      render: (text: string, record: any) => (
+      render: (text: string, record: Employee) => (
         <span>
           {record.firstname} {record.lastname}
         </span>
@@ -36,8 +61,7 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
       title: t("gender"),
       dataIndex: "gender",
       render: (gender: string) => {
-        // แสดงผลค่าของ gender เช่น "male", "female", "unsex" โดยแปลเป็นภาษา
-        console.log(gender)
+        console.log(gender);
         return t(gender); // "male" => "ผู้ชาย", "female" => "ผู้หญิง", "unsex" => "ไม่ระบุ"
       },
     },
@@ -49,37 +73,32 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
       title: t("nationality"),
       dataIndex: "nationality",
       render: (nationality: string) => {
-        console.log('nationality: ', nationality)
-        // แสดงผลค่าของ gender เช่น "male", "female", "unsex" โดยแปลเป็นภาษา
-        return t(nationality); // "male" => "ผู้ชาย", "female" => "ผู้หญิง", "unsex" => "ไม่ระบุ"
+        console.log("nationality: ", nationality);
+        return t(nationality); // แสดงผลค่าของ nationality
       },
     },
     {
       title: t("manages"),
       key: "manage",
-      render: (_: any, record: any) => (
+      render: (record: Employee) => (
         <span>
           <Button
             icon={<EditOutlined />}
-            // ฟังก์ชันแก้ไขคุณสามารถเพิ่มได้ที่นี่
             style={{ marginRight: 8 }}
             onClick={() => onEdit(record)} // ส่งข้อมูลไปที่ฟังก์ชัน handleEdit
           />
-          <Popconfirm
-            title="Are you sure to delete this employee?"
-            onConfirm={() => handleDelete(record.id)} // ส่ง citizenId ไปในฟังก์ชันลบ
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button icon={<DeleteOutlined />} danger />
-          </Popconfirm>
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+            danger
+          />
         </span>
       ),
     },
   ];
 
   // แปลงข้อมูลพนักงานให้เป็นข้อมูลที่ใช้ในตาราง
-  const data = employees.map((employee, index) => ({
+  const data = employees.map((employee) => ({
     id: employee.id,
     title: employee.title,
     firstname: employee.firstname,
@@ -90,20 +109,34 @@ const UserTable: React.FC<{ onEdit: (employee: any) => void }> = ({
     nationality: employee.nationality,
     citizenId: employee.citizenId, // ใช้สำหรับลบ
     salary: employee.salary,
-    passport: employee.passportNo, // ใช้สำหรับแก้ไข
+    passport: employee.passport, // ใช้สำหรับแก้ไข
   }));
 
   return (
-    <Table
-      columns={columns}
-      dataSource={data}
-      pagination={{
-        pageSize: 5, // จำกัดข้อมูล 5 รายการต่อหน้า
-        showQuickJumper: true, // แสดงตัวเลือกไปยังหน้าที่ต้องการ
-        showSizeChanger: false, // ปิดการปรับจำนวนข้อมูลต่อหน้า
-      }}
-      rowKey="id" // ใช้ `id` เป็นคีย์ของแต่ละแถว
-    />
+    <>
+      <Button
+        type="primary"
+        danger
+        onClick={handleDeleteSelected}
+        style={{ marginBottom: 16 }}
+      >
+        {t("delete_selected")}
+      </Button>
+      <Table
+        rowSelection={{
+          selectedRowKeys,
+          onChange: handleSelectChange,
+        }} // เพิ่มการเลือกแถว
+        columns={columns}
+        dataSource={data}
+        pagination={{
+          pageSize: 5,
+          showQuickJumper: true,
+          showSizeChanger: false,
+        }}
+        rowKey="id"
+      />
+    </>
   );
 };
 

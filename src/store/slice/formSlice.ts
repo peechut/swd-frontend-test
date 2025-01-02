@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // กำหนดประเภทของข้อมูลพนักงาน
-interface Employee {
+export type Employee = {
   id: string; // ใช้ id ในการอ้างอิง
   title: string;
   firstname: string;
@@ -13,26 +13,29 @@ interface Employee {
   phone: string;
   salary: string;
   passport: string;
-}
-
+};
 interface FormState {
   user: Employee[];
   mode: "add" | "edit"; // กำหนดโหมดเป็น "add" หรือ "edit"
+  selectedRowKeys: string[]; // เพิ่มเพื่อเก็บ selectedRowKeys
 }
 
 // โหลดข้อมูลจาก localStorage
 const initialState: FormState = {
   user: JSON.parse(localStorage.getItem("employees") || "[]"),
-  mode: "add", 
-
+  mode: "add",
+  selectedRowKeys: [], // ค่าเริ่มต้นเป็นอาร์เรย์ว่าง
 };
 
 const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
+    setSelectedRowKeys: (state, action: PayloadAction<string[]>) => {
+      state.selectedRowKeys = action.payload;
+    },
     addEmployee: (state, action: PayloadAction<Employee>) => {
-      console.log(action.payload)
+      console.log(action.payload);
       state.user.push(action.payload);
       // อัปเดต localStorage
       localStorage.setItem("employees", JSON.stringify(state.user));
@@ -48,11 +51,17 @@ const formSlice = createSlice({
         localStorage.setItem("employees", JSON.stringify(state.user));
       }
     },
-    
+    deleteMultipleEmployees: (state, action: PayloadAction<string[]>) => {
+      state.user = state.user.filter((emp) => !action.payload.includes(emp.id));
+      localStorage.setItem("employees", JSON.stringify(state.user));
+    },
   },
 });
 
 // Export actions และ reducer
-export const { addEmployee, deleteEmployee, editEmployee } =
-  formSlice.actions;
+export const {  addEmployee,
+  deleteEmployee,
+  deleteMultipleEmployees,
+  editEmployee,
+  setSelectedRowKeys, } = formSlice.actions;
 export default formSlice.reducer;

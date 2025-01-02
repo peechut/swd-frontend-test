@@ -5,8 +5,11 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   en: {
     translation: {
-      name:"Name",
+      name: "Name",
       layoutStyle: "Layout & style",
+      formTable: "Form & Table",
+      test1: "Test1",
+      test2: "Test2",
       title: "Title",
       firstname: "Firstname",
       lastname: "Lastname",
@@ -36,13 +39,19 @@ const resources = {
       titlePlaceholder: "title",
       YYMMDD: "YYYY-MM-DD",
       placeholderNationality: "-- Please select --",
-      manages:"Manages"
+      manages: "Manages",
+      movePosition: "Move Position",
+      moveShape: "Move shape",
+      delete_selected:"Delete selected",
     },
   },
   th: {
     translation: {
-      name:"ชื่อ",
+      name: "ชื่อ",
       layoutStyle: "การจัดการหน้าเว็ป",
+      formTable: "การจัดการหน้าฟอร์ม",
+      test1: "แบบฝึกหัดที่ 1",
+      test2: "แบบฝึกหัดที่ 2",
       title: "คำนำหน้า",
       firstname: "ชื่อ",
       lastname: "นามสกุล",
@@ -71,7 +80,10 @@ const resources = {
       Other: "อื่นๆ",
       YYMMDD: "ปี-เดือน-วัน",
       placeholderNationality: "-- กรุณาเลือก --",
-      manages:"จัดการ"
+      manages: "จัดการ",
+      movePosition: "เปลี่ยนตำแหน่ง",
+      moveShape: "เลื่อนรูปแบบ",
+      delete_selected:"ลบข้อมูลที่เลือก",
     },
   },
 };

@@ -8,7 +8,6 @@ import i18n from "../utils/i18n";
 import styles from "./page.module.scss"; // import CSS module
 import "./globals.scss"; // นำเข้าไฟล์ CSS ทั่วไป
 import ReduxProvider from "@/store/provider";
-import { store } from "@/store/store";
 
 export default function RootLayout({
   children,
@@ -47,7 +46,12 @@ export default function RootLayout({
   }, []);
 
   // ตรวจสอบ path และแสดงข้อความที่เหมาะสม
-  const headerText = pathname === "/test1" ? t("layoutStyle") : ""; // ถ้าอยู่ที่ /test1 ให้แสดงข้อความ 'layoutStyle'
+  const headerText =
+    pathname === "/test1"
+      ? t("layoutStyle")
+      : pathname === "/test2"
+      ? t("formTable")
+      : ""; // ถ้าอยู่ที่ /test2 ให้แสดงข้อความ 'formTable'
 
   return (
     <html lang={currentLanguage}>

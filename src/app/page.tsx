@@ -7,18 +7,16 @@ import CustomCard from '../components/Card';
 import { Row, Col } from 'antd';
 
 export default function Home() {
-  const { t } = useTranslation('common'); // ใช้ namespace "common"
+  const { t } = useTranslation(); 
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>{t('welcome')}</h1>
-
-      <Row gutter={16}>
+      <Row gutter={16} justify={'center'} align={'middle'}>
         <Col span={8}>
-          <CustomCard title={t('goToTest1')} path="/test1" />
+          <CustomCard title={t('test1')} body={t('layoutStyle')} path="/test1" />
         </Col>
         <Col span={8}>
-          <CustomCard title={t('goToTest2')} path="/test2" />
+          <CustomCard title={t('test2')} body={t('formTable')} path="/test2" />
         </Col>
       </Row>
     </div>
