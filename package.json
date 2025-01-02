@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.0",
     "antd": "^5.20.6",
     "i18next": "^23.15.1",
     "immer": "^10.1.1",

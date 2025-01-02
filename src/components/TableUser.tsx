@@ -98,7 +98,7 @@ const UserTable: React.FC<UserTableProps> = ({ onEdit }) => {
   ];
 
   // แปลงข้อมูลพนักงานให้เป็นข้อมูลที่ใช้ในตาราง
-  const data = employees.map((employee) => ({
+  const data = employees.map((employee:Employee) => ({
     id: employee.id,
     title: employee.title,
     firstname: employee.firstname,
